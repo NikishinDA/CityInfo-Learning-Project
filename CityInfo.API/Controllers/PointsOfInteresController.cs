@@ -20,7 +20,7 @@ namespace CityInfo.API.Controllers
             return Ok(city.PointsOfInterest);
         }
         [HttpGet("{pointofinterestid}", Name = "GetPointOfInterest")]
-        public ActionResult<PointOfInterestDto> GetPointOfInterest(int cityId, int pointOfInterestId) 
+        public ActionResult<PointOfInterestDto> GetPointOfInterest(int cityId, int pointOfInterestId)
         {
             var city = CitiesDataStore.Instance.Cities.FirstOrDefault(c => c.Id == cityId);
             if (city == null)
@@ -40,11 +40,9 @@ namespace CityInfo.API.Controllers
         [HttpPost]
         public ActionResult<PointOfInterestDto> CreationOfInterest(int cityId, PointOfInterestForCreationDto pointOfInterest)
         {
-            var city = CitiesDataStore.Instance.Cities.FirstOrDefault(c => c.Id==cityId);
+            var city = CitiesDataStore.Instance.Cities.FirstOrDefault(c => c.Id == cityId);
             if (city == null)
-            {
                 return NotFound();
-            }
 
             //temp
             var maxPointOfInterestId = CitiesDataStore.Instance.Cities.SelectMany(c => c.PointsOfInterest).Max(p => p.Id);
@@ -64,6 +62,23 @@ namespace CityInfo.API.Controllers
                     pointOfInterestId = finalPointOfInterest.Id
                 },
                 finalPointOfInterest);
+        }
+
+        [HttpPut("{pointofinterestid}")]
+        public ActionResult UpdatePointOfInterest(int cityId, int pointOfInterestId, PointsOfInterestForUpdateDto pointsOfInterest) 
+        {
+            var city = CitiesDataStore.Instance.Cities.FirstOrDefault(c => c.Id == cityId);
+            if (city == null) 
+                return NotFound();
+            
+            var pointOfInterestFromStore = city.PointsOfInterest.FirstOrDefault(c=> c.Id == pointOfInterestId);
+            if (pointOfInterestFromStore == null) 
+                return NotFound();
+
+            pointOfInterestFromStore.Name = pointsOfInterest.Name;
+            pointOfInterestFromStore.Description = pointsOfInterest.Description;
+
+            return NoContent();
         }
     }
 }
