@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.StaticFiles;
+using Serilog;
 
 namespace CityInfo.API
 {
@@ -6,8 +7,16 @@ namespace CityInfo.API
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .WriteTo.File("logs/city.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
 
+            var builder = WebApplication.CreateBuilder(args);
+            //builder.Logging.ClearProviders();
+            //builder.Logging.AddConsole();
+            builder.Host.UseSerilog();
             // Add services to the container.
 
             builder.Services.AddControllers(options =>
