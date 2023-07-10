@@ -18,7 +18,7 @@ namespace CityInfo.API
             //builder.Logging.ClearProviders();
             //builder.Logging.AddConsole();
             builder.Host.UseSerilog();
-            // Add services to the container.
+            // Add services to the container. 
 
             builder.Services.AddControllers(options =>
             {
@@ -29,8 +29,13 @@ namespace CityInfo.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
-
-            builder.Services.AddTransient<LocalMailService>();
+#if DEBUG
+            builder.Services.AddTransient<IMailService, LocalMailService>();
+#else
+            builder.Services.AddTransient<IMailService, CloudMailService>();
+#endif
+            
+            builder.Services.AddSingleton<CitiesDataStore>();
 
             var app = builder.Build();
 
